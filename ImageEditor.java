@@ -123,10 +123,9 @@ public class ImageEditor {
 			double shiftX, shiftY, r, angle, transformedX, transformedY;
 			int pixel;
 			
-			if (imageLabel.getIcon() != null) {	//If image has not been loaded, then filters/effects will not run.
+			if (imageLabel.getIcon() != null) {
 				for (int x = 0; x < imageWidth; x++) {
 					for (int y = 0; y < imageHeight; y++) {
-			// Current coordinate is shifted away from center in order to make the bulge centered
 							shiftX = x - imageWidth / 2; 
 							shiftY = y - imageHeight / 2;			
 							r = Math.sqrt(shiftX * shiftX + shiftY * shiftY); //To polar coordinates
@@ -137,12 +136,17 @@ public class ImageEditor {
 							transformedX = (r * Math.cos(angle)) + imageWidth / 2; 
 							transformedY = (r * Math.sin(angle)) + imageHeight / 2;
 							
-							transformedX = (transformedX > imageWidth - 1) ? imageWidth - 1 : transformedX;
-							transformedX = (transformedX < 0) ? 0 : transformedX;
-							transformedY = (transformedY > imageHeight - 1) ? imageHeight - 1 : transformedY;
-							transformedY = (transformedY < 0) ? 0 : transformedY;
+							transformedX = (
+								transformedX > imageWidth - 1) ? imageWidth - 1 : transformedX;
+							transformedX = (
+								transformedX < 0) ? 0 : transformedX;
+							transformedY = (
+								transformedY > imageHeight - 1) ? imageHeight - 1 : transformedY;
+							transformedY = (
+								transformedY < 0) ? 0 : transformedY;
 		                    
-		                    pixel = image.getRGB((int) transformedX, (int) transformedY);  
+		                    pixel = image.getRGB(
+								(int) transformedX, (int) transformedY);  
 	
 							image2.setRGB(x, y, pixel);
 					}
@@ -166,9 +170,12 @@ public class ImageEditor {
 				int newX = 0, newY = 0;
 
 				for (int x = 0; x < 5; x++) {
-					for (int y = 0; y < 5; y++) { //Gaussian equation is used to create the weights for the blur
-						gaussian = Math.pow(1 / (Math.sqrt((2 * Math.PI) * Math.pow(5, 2))), 
-								           -(Math.pow(x, 2) + Math.pow(y, 2)) / (2 * Math.pow(5, 2)));
+					for (int y = 0; y < 5; y++) { 
+						//Gaussian equation for blur
+						gaussian = Math.pow(1 / (
+							Math.sqrt((2 * Math.PI) * Math.pow(5, 2))), 
+							-(Math.pow(x, 2) + Math.pow(y, 2)) 
+							/ (2 * Math.pow(5, 2)));
 						sum += gaussian; 
 						weight[x][y] = gaussian;
 					}
@@ -176,7 +183,7 @@ public class ImageEditor {
 				
 				for (int x = 0; x < 5; x++) {
 					for (int y = 0; y < 5; y++) {
-					weight[x][y] /= sum; //Normalizes the weight so that the sum is 1
+					weight[x][y] /= sum;
 					}
 				}
 				
@@ -185,13 +192,16 @@ public class ImageEditor {
 						
 							for (int x1 = 0; x1 < 5; x1++) {
 								for (int y1 = 0; y1 < 5; y1++) {
-									newX = (x1 < 3) ? x - x1 : x + (x1 - 3); //Retreives a pixel surrounding the current one
+									newX = (x1 < 3) ? x - x1 : x + (x1 - 3); 
 									newY = (y1 < 3) ? y - y1 : y + (y1 - 3);
 						
-									//Ensures that the new pixel is within the bounds of the image, modifies the pixel if not.
-									newX = (newX > imageWidth - 1) ? imageWidth - 1 : newX; 
+									//Ensures that the new pixel is within the bounds 
+									// of the image, modifies the pixel if not.
+									newX = (
+										newX > imageWidth - 1) ? imageWidth - 1 : newX; 
 									newX = (newX < 0) ? 0 : newX;
-									newY = (newY > imageHeight - 1) ? imageHeight - 1 : newY;
+									newY = (
+										newY > imageHeight - 1) ? imageHeight - 1 : newY;
 									newY = (newY  < 0) ? 0 : newY;
 									
 									color = new Color(image.getRGB(newX, newY));
@@ -202,7 +212,8 @@ public class ImageEditor {
 								}
 							}
 							
-						image.setRGB(x, y, new Color((int)sumRed, (int)sumGreen,(int)sumBlue).getRGB());
+						image.setRGB(x, y, new Color(
+							(int)sumRed, (int)sumGreen,(int)sumBlue).getRGB());
 						sumRed = 0;
 						sumGreen = 0;
 						sumBlue = 0;
@@ -220,21 +231,23 @@ public class ImageEditor {
 				if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) { 
 					String extension, path;
 					String newFile = fileChooser.getSelectedFile().getName(); 
-					//If user does not include the file extension, then use the image's orginal extension
-					extension = (newFile.indexOf(".") == -1 || newFile.charAt(newFile.length() - 1) == '.') ?  
+					extension = (newFile.indexOf(".") == -1 || 
+					newFile.charAt(newFile.length() - 1) == '.') ?  
 							    fileName.substring(fileName.indexOf(".") + 1) :
 							    newFile.substring(newFile.indexOf(".") + 1);
 				
 					if (newFile.indexOf(".") == -1) {
-						path = fileChooser.getSelectedFile().getAbsolutePath() + '.' + extension; //Adds the original extension to file path
+						path = fileChooser.getSelectedFile().getAbsolutePath() + 
+						'.' + extension;
 					} else if (newFile.charAt(newFile.length() - 1) == '.') { 
-						path = fileChooser.getSelectedFile().getAbsolutePath() + extension;
+						path = fileChooser.getSelectedFile().getAbsolutePath() 
+						+ extension;
 					} else {
 						path = fileChooser.getSelectedFile().getAbsolutePath();
 					}
 				
 					try {
-						ImageIO.write(image, extension, new File(path)); //Saves edited image the user's desired location
+						ImageIO.write(image, extension, new File(path));
 					} catch (IOException e) {
 						System.out.println("Error: " + e);
 					}
@@ -248,7 +261,7 @@ public class ImageEditor {
 		public void actionPerformed(ActionEvent event) {
 			if (imageLabel.getIcon() != null) {	
 				try {
-					image = ImageIO.read(new File(fileNameInit)); //Reloads original image into image
+					image = ImageIO.read(new File(fileNameInit));
 				} catch (IOException e) {
 					System.out.println("Error: " + e);
 				}
@@ -295,17 +308,22 @@ public class ImageEditor {
 						int[] rgb = {(pixel>>16)&0xff, (pixel>>8)&0xff, pixel&0xff};
 						
 						if (event.getActionCommand().equals("Sepia")) {
+							//Formula for the sepia effect
 							r = (int) (0.393 * rgb[0] + 0.769 * rgb[1] + 0.189 * rgb[2]);
-							g = (int) (0.349 * rgb[0] + 0.686 * rgb[1] + 0.168 * rgb[2]); //Formula for the sepia effect
+							g = (int) (0.349 * rgb[0] + 0.686 * rgb[1] + 0.168 * rgb[2]); 
 							b = (int) (0.272 * rgb[0] + 0.534 * rgb[1] + 0.131 * rgb[2]);
 							rgb[0] = (r > 255) ? 255 : r;
-							rgb[1] = (g > 255) ? 255 : g; //If RGB values exceed 255, it will be set to 255
+							rgb[1] = (g > 255) ? 255 : g;
 							rgb[2] = (b > 255) ? 255 : b;
 							pixel = (rgb[0] << 16) | (rgb[1] << 8) | rgb[2];
 						} else if (event.getActionCommand().equals("Invert")) {
-							pixel = ((255 - pixel>>16&0xff) << 16) | ((255 - pixel>>8&0xff) << 8) | 255 - pixel&0xff;
+							//Invert
+							pixel = ((255 - pixel>>16&0xff) << 16) |
+							 ((255 - pixel>>8&0xff) << 8) | 255 - pixel&0xff;
 						} else {
-							pixel = (((pixel >> 16)&0xff) + ((pixel >> 8)&0xff) + (pixel&0xff)) / 3; //Averages RGB value of a pixel to get grayscale effect
+							//Greyscale
+							pixel = (((pixel >> 16)&0xff) + 
+							((pixel >> 8)&0xff) + (pixel&0xff)) / 3;
 							pixel = (pixel << 16) | (pixel<< 8) | pixel;
 							
 						}
@@ -324,13 +342,15 @@ public class ImageEditor {
 		public void actionPerformed(ActionEvent event) {
 			if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 				try {
-					image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB); //Loads selected image into a BufferedImage
-					image = ImageIO.read(new File(fileChooser.getSelectedFile().getAbsolutePath().replace('\\', '/')));
+					image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
+					image = ImageIO.read(new File(
+						fileChooser.getSelectedFile().getAbsolutePath().replace('\\', '/')));
 					fileNameInit = fileChooser.getSelectedFile().getAbsolutePath().replace('\\', '/');
 					fileName = fileChooser.getSelectedFile().getName();
 					imageHeight = image.getHeight();
 					imageWidth = image.getWidth();
-					image2 = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);		
+					image2 = new BufferedImage(imageWidth, 
+					 imageHeight, BufferedImage.TYPE_INT_RGB);		
 					imageLabel.setIcon(new ImageIcon(image));
 					} catch (IOException e) {
 						System.out.println("Error: " + e);
@@ -340,9 +360,9 @@ public class ImageEditor {
 	}
 	
 	private static class Exit implements ActionListener {
-		
+		//Exits program
 		public void actionPerformed(ActionEvent event) {
-			System.exit(0); //Exits program
+			System.exit(0); 
 		}
 	}
 }
